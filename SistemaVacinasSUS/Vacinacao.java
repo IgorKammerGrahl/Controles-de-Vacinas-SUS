@@ -12,17 +12,20 @@ public class Vacinacao {
 	private LocalVacinacao local;
 
 	public Vacinacao(int id, Cidadao cidadao, AgenteDeSaude agente, Vacina vacina, Lote lote, Date data, LocalVacinacao local) {
+		if (lote == null) {
+			throw new IllegalArgumentException("Lote não pode ser nulo.");
+		}
 		if (lote.getQuantidade() <= 0) {
 			throw new IllegalStateException("Estoque insuficiente para vacinação.");
 		}
 		if (local == null) {
 			throw new IllegalArgumentException("Local de vacinação é obrigatório.");
 		}
-
 		this.id = id;
 		this.cidadao = cidadao;
 		this.agente = agente;
 		this.vacina = vacina;
+		this.lote = lote;
 		this.data = data;
 		this.local = local;
 

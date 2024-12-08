@@ -79,6 +79,20 @@ public class Usuario {
 		return this.email.equals(email) && this.senha.equals(senha);
 	}
 
+	public static void testarAutenticacao(Usuario usuario, String email, String senha) {
+		try {
+			boolean autenticado = usuario.autenticar(email, senha);
+			if (autenticado) {
+				System.out.println("✔️ Usuário autenticado com sucesso: " + usuario.getNome());
+			} else {
+				System.out.println("❌ Falha na autenticação para o usuário: " + usuario.getNome());
+			}
+		} catch (IllegalArgumentException e) {
+			System.out.println("❌ Erro ao tentar autenticar: " + e.getMessage());
+		}
+	}
+
+
 	public PerfilUsuario getPerfil() {
 		return perfil;
 	}

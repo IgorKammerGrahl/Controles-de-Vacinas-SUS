@@ -4,85 +4,64 @@ import java.util.*;
 
 public class SistemaVacinasTest {
 	public static void main(String[] args) {
-		testarVacina();
-		testarLote();
-		testarUsuario();
-		testarAgendamento();
-	}
+        Lote loteCovid = new Lote(1, "L12345", new Date(), 50);
+        Lote loteGripe = new Lote(2, "L67890", new Date(), 30);
 
-	private static void testarVacina() {
-		System.out.println("\n[Teste: Vacina]");
-		try {
-			Lote lote = new Lote(1, "L12345", new Date(), 100);
-			Vacina vacina = new Vacina(1, "COVID-19", "Pfizer", 2, 21, lote);
-			System.out.println("Vacina criada com sucesso: " + vacina.obterInformacoes());
-		} catch (Exception e) {
-			System.out.println("Falha ao criar vacina: " + e.getMessage());
-		}
+        Vacina vacinaCovid = new Vacina(1, "COVID-19", "Pfizer", 2, 21, loteCovid);
+        Vacina vacinaGripe = new Vacina(2, "Gripe", "Sanofi", 1, 0, loteGripe);
 
-		try {
-			new Vacina(1, "COVID-19", "Pfizer", -1, 21, null);
-			System.out.println("Erro esperado para doses negativas não foi lançado.");
-		} catch (IllegalArgumentException e) {
-			System.out.println("Exceção correta para doses negativas: " + e.getMessage());
-		}
-	}
+        List<Vacina> todasVacinas = new ArrayList<>();
+        todasVacinas.add(vacinaCovid);
+        todasVacinas.add(vacinaGripe);
 
-	private static void testarLote() {
-		System.out.println("\n[Teste: Lote]");
-		try {
-			Lote lote = new Lote(1, "L12345", new Date(), 100);
-			System.out.println("Lote criado com sucesso.");
-		} catch (Exception e) {
-			System.out.println("Falha ao criar lote válido: " + e.getMessage());
-		}
+        Cidadao cidadao1 = new Cidadao(1, "João Silva", "123.456.789-00", new Date(), "joao@gmail.com", "senha123");
+        Cidadao cidadao2 = new Cidadao(2, "Maria Souza", "987.654.321-00", new Date(), "maria@gmail.com", "senha456");
 
-		try {
-			new Lote(1, "L54321", new Date(), -10);
-			System.out.println("Erro esperado para quantidade negativa não foi lançado.");
-		} catch (IllegalArgumentException e) {
-			System.out.println("Exceção correta para quantidade negativa: " + e.getMessage());
-		}
-	}
+        AgenteDeSaude agente = new AgenteDeSaude(1, "Carlos Mendes", "111.222.333-44", new Date(), "carlos@gmail.com", "senha789");
 
-	private static void testarUsuario() {
-		System.out.println("\n[Teste: Usuario]");
-		Usuario usuario = new Cidadao(1, "Ana", "111.222.333-44", new Date(), "ana@gmail.com", "senha123");
-		if (usuario.autenticar("ana@gmail.com", "senha123")) {
-			System.out.println("Autenticação com dados corretos passou.");
-		} else {
-			System.out.println("Autenticação com dados corretos falhou.");
-		}
+        System.out.println("Teste de autenticação de cidadão:");
+        Usuario.testarAutenticacao(cidadao1, "joao@gmail.com", "senha123"); // Credenciais corretas
+        Usuario.testarAutenticacao(cidadao1, "joao@gmail.com", "senhaErrada"); // Senha incorreta
+        Usuario.testarAutenticacao(cidadao1, "emailErrado@gmail.com", "senha123"); // Email incorreto
 
-		try {
-			usuario.autenticar(null, "senha123");
-			System.out.println("Erro esperado para email nulo não foi lançado.");
-		} catch (IllegalArgumentException e) {
-			System.out.println("Exceção correta para email nulo: " + e.getMessage());
-		}
-	}
+        System.out.println("\nTeste de autenticação de agente de saúde:");
+        Usuario.testarAutenticacao(agente, "carlos@gmail.com", "senha789"); // Credenciais corretas
+        Usuario.testarAutenticacao(agente, "carlos@gmail.com", "senhaIncorreta"); // Senha incorreta
+        Usuario.testarAutenticacao(agente, "outroEmail@gmail.com", "senha789"); // Email incorreto
 
-	private static void testarAgendamento() {
-		System.out.println("\n[Teste: Agendamento]");
-		try {
-			Cidadao cidadao = new Cidadao(1, "João", "123.456.789-00", new Date(), "joao@gmail.com", "senha123");
-			LocalVacinacao local = new LocalVacinacao(1, "Posto de Saúde", "Rua 123", "123456789");
-			Vacina vacina = new Vacina(1, "COVID-19", "Pfizer", 2, 21, null);
-			Agendamento agendamento = new Agendamento(1, cidadao, List.of(vacina), new Date(), local);
-			agendamento.confirmarAgendamento();
-			System.out.println("Agendamento confirmado com dados válidos.");
-		} catch (Exception e) {
-			System.out.println("Falha ao confirmar agendamento válido: " + e.getMessage());
-		}
+        Vacinacao vacinacaoJoao = new Vacinacao(1, cidadao1, agente, vacinaCovid, loteCovid, new Date(), new LocalVacinacao(1, "Posto A", "Rua X", "99999999"));
+        agente.registrarVacinacao(vacinacaoJoao);
+        cidadao1.registrarVacina(vacinaCovid);
 
-		try {
-			Cidadao cidadao = new Cidadao(1, "João", "123.456.789-00", new Date(), "joao@gmail.com", "senha123");
-			LocalVacinacao local = new LocalVacinacao(1, "Posto de Saúde", "Rua 123", "123456789");
-			new Agendamento(1, cidadao, null, new Date(), local);
-			System.out.println("Erro esperado para agendamento sem vacinas não foi lançado.");
-		} catch (IllegalArgumentException e) {
-			System.out.println("Exceção correta para agendamento sem vacinas: " + e.getMessage());
-		}
-	}
+        Vacinacao vacinacaoMaria = new Vacinacao(2, cidadao2, agente, vacinaGripe, loteGripe, new Date(), new LocalVacinacao(2, "Posto B", "Rua Y", "88888888"));
+        agente.registrarVacinacao(vacinacaoMaria);
+        cidadao2.registrarVacina(vacinaGripe);
+
+        System.out.println("\nVacinas aplicadas para João:");
+        for (Vacina vacina : cidadao1.listarVacinasAplicadas()) {
+            System.out.println("- " + vacina.getNome());
+        }
+
+        System.out.println("\nVacinas pendentes para João:");
+        for (Vacina vacina : cidadao1.listarVacinasPendentes(todasVacinas)) {
+            System.out.println("- " + vacina.getNome());
+        }
+
+        System.out.println("\nVacinas aplicadas para Maria:");
+        for (Vacina vacina : cidadao2.listarVacinasAplicadas()) {
+            System.out.println("- " + vacina.getNome());
+        }
+
+        System.out.println("\nVacinas pendentes para Maria:");
+        for (Vacina vacina : cidadao2.listarVacinasPendentes(todasVacinas)) {
+            System.out.println("- " + vacina.getNome());
+        }
+
+        System.out.println("\nRelatório Geral de Vacinas Aplicadas:");
+        System.out.println(agente.gerarRelatorioVacinas());
+
+        System.out.println("\nRelatório de Cidadãos Atendidos:");
+        System.out.println(agente.gerarRelatorioCidadaosAtendidos());
+    }
 }
 

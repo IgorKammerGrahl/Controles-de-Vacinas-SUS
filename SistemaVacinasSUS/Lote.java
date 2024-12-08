@@ -9,6 +9,7 @@ public class Lote {
 	private int quantidade;
 
 	public Lote(int id, String numeroLote, Date validade, int quantidade) {
+		if (quantidade < 0) throw new IllegalArgumentException("Quantidade do lote não pode ser negativa");
 		this.id = id;
 		this.numeroLote = numeroLote;
 		this.validade = validade;
@@ -42,6 +43,10 @@ public class Lote {
 
 	public boolean verificarEstoque() {
 		return quantidade > 0;
+	}
+
+	public boolean estoqueBaixo() {
+		return quantidade < 10; // Alerta se o estoque for menor que 10
 	}
 
 	@Override

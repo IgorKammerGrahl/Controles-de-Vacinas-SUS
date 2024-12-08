@@ -9,6 +9,8 @@ public class Vacina {
 	private int intervaloEntreDoses;
 
 	public Vacina(int id, String nome, String fabricante, int dosesRecomendadas, int intervaloEntreDoses, Lote lote) {
+		if (dosesRecomendadas <= 0) throw new IllegalArgumentException("Doses recomendadas devem ser positivas");
+		if (intervaloEntreDoses < 0) throw new IllegalArgumentException("Intervalo entre doses deve ser positivo");
 		this.id = id;
 		this.nome = nome;
 		this.fabricante = fabricante;

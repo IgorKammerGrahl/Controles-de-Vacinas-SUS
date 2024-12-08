@@ -7,14 +7,26 @@ public class Vacinacao {
 	private Cidadao cidadao;
 	private AgenteDeSaude agente;
 	private Vacina vacina;
+	private Lote lote;
 	private Date data;
+	private LocalVacinacao local;
 
-	public Vacinacao(int id, Cidadao cidadao, AgenteDeSaude agente, Vacina vacina, Date data) {
+	public Vacinacao(int id, Cidadao cidadao, AgenteDeSaude agente, Vacina vacina, Lote lote, Date data, LocalVacinacao local) {
+		if (lote.getQuantidade() <= 0) {
+			throw new IllegalStateException("Estoque insuficiente para vacinação.");
+		}
+		if (local == null) {
+			throw new IllegalArgumentException("Local de vacinação é obrigatório.");
+		}
+
 		this.id = id;
 		this.cidadao = cidadao;
 		this.agente = agente;
 		this.vacina = vacina;
 		this.data = data;
+		this.local = local;
+
+		lote.setQuantidade(lote.getQuantidade() - 1);
 	}
 
 	public int getId() {
@@ -47,6 +59,22 @@ public class Vacinacao {
 	}
 	public void setData(Date data) {
 		this.data = data;
+	}
+
+	public Lote getLote() {
+		return lote;
+	}
+
+	public void setLote(Lote lote) {
+		this.lote = lote;
+	}
+
+	public LocalVacinacao getLocal() {
+		return local;
+	}
+
+	public void setLocal(LocalVacinacao local) {
+		this.local = local;
 	}
 
 	public String emitirComprovante() {

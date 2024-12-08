@@ -11,6 +11,9 @@ public class Agendamento {
 	private LocalVacinacao local;
 
 	public Agendamento(int id, Cidadao cidadao, List<Vacina> vacinas, Date dataAgendamento, LocalVacinacao local) {
+		if (vacinas == null || vacinas.isEmpty()) {
+			throw new IllegalArgumentException("Vacinas associadas não podem ser nulas ou vazias");
+		}
 		this.id = id;
 		this.cidadao = cidadao;
 		this.vacinas = vacinas;

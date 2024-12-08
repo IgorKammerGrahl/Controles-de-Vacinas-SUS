@@ -3,12 +3,26 @@ package SistemaVacinasSUS;
 import java.util.Date;
 
 public class Usuario {
+	public enum PerfilUsuario { CIDADAO, AGENTE_DE_SAUDE }
+
 	private int id;
 	private String nome;
 	private String cpf;
 	private Date dataNascimento;
 	private String email;
 	private String senha;
+	private PerfilUsuario perfil;
+
+
+	public Usuario(int id, String nome, String cpf, Date dataNascimento, String email, String senha, PerfilUsuario perfil) {
+		this.id = id;
+		this.nome = nome;
+		this.cpf = cpf;
+		this.dataNascimento = dataNascimento;
+		this.email = email;
+		this.senha = senha;
+		this.perfil = perfil;
+	}
 
 	public int getId() {
 		return id;
@@ -58,17 +72,15 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public Usuario(int id, String nome, String cpf, Date dataNascimento, String email, String senha) {
-		this.id = id;
-		this.nome = nome;
-		this.cpf = cpf;
-		this.dataNascimento = dataNascimento;
-		this.email = email;
-		this.senha = senha;
+	public boolean autenticar(String email, String senha) {
+		if (email == null || senha == null) {
+			throw new IllegalArgumentException("Email e senha não podem ser nulos");
+		}
+		return this.email.equals(email) && this.senha.equals(senha);
 	}
 
-	public boolean autenticar(String email, String senha) {
-		return this.email.equals(email) && this.senha.equals(senha);
+	public PerfilUsuario getPerfil() {
+		return perfil;
 	}
 
 	@Override

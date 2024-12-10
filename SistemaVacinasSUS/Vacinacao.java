@@ -1,75 +1,105 @@
 package SistemaVacinasSUS;
 
 import java.util.Date;
+import java.util.List;
 
 public class Vacinacao {
 	private int id;
 	private Cidadao cidadao;
 	private AgenteDeSaude agente;
-	private Vacina vacina;
-	private Lote lote;
+	private List<Vacina> vacinas; 
 	private Date data;
 	private LocalVacinacao local;
 
-	public Vacinacao(int id, Cidadao cidadao, AgenteDeSaude agente, Vacina vacina, Lote lote, Date data, LocalVacinacao local) {
-		if (lote == null) {
-			throw new IllegalArgumentException("Lote não pode ser nulo.");
+	public Vacinacao(int id, Cidadao cidadao, AgenteDeSaude agente, List<Vacina> vacinas, Date data, LocalVacinacao local) {
+		if (vacinas == null || vacinas.isEmpty()) {
+			throw new IllegalArgumentException("A lista de vacinas não pode ser nula ou vazia.");
 		}
-		if (lote.getQuantidade() <= 0) {
-			throw new IllegalStateException("Estoque insuficiente para vacinação.");
+		for (Vacina vacina : vacinas) {
+			if (vacina.getLote() == null || vacina.getLote().getQuantidade() <= 0) {
+				throw new IllegalStateException("Estoque insuficiente para a vacina: " + vacina.getNome());
+			}
 		}
 		if (local == null) {
 			throw new IllegalArgumentException("Local de vacinação é obrigatório.");
 		}
+
 		this.id = id;
 		this.cidadao = cidadao;
 		this.agente = agente;
-		this.vacina = vacina;
-		this.lote = lote;
+		this.vacinas = vacinas;
 		this.data = data;
 		this.local = local;
 
-		lote.setQuantidade(lote.getQuantidade() - 1);
+		for (Vacina vacina : vacinas) {
+			vacina.getLote().setQuantidade(vacina.getLote().getQuantidade() - 1);
+		}
+	}
+
+	public Vacinacao(int id, Agendamento agendamento, AgenteDeSaude agente) {
+		if (agendamento.getStatus() != Agendamento.StatusAgendamento.CONFIRMADO) {
+			throw new IllegalStateException("A vacinação só pode ser realizada em agendamentos confirmados.");
+		}
+		List<Vacina> vacinas = agendamento.getVacinas();
+		if (vacinas == null || vacinas.isEmpty()) {
+			throw new IllegalArgumentException("Agendamento deve conter pelo menos uma vacina.");
+		}
+		for (Vacina vacina : vacinas) {
+			if (vacina.getLote() == null || vacina.getLote().getQuantidade() <= 0) {
+				throw new IllegalStateException("Estoque insuficiente para a vacina: " + vacina.getNome());
+			}
+		}
+
+		this.id = id;
+		this.cidadao = agendamento.getCidadao();
+		this.agente = agente;
+		this.vacinas = vacinas;
+		this.data = agendamento.getDataAgendamento();
+		this.local = agendamento.getLocal();
+
+		for (Vacina vacina : vacinas) {
+			vacina.getLote().setQuantidade(vacina.getLote().getQuantidade() - 1);
+		}
 	}
 
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public Cidadao getCidadao() {
 		return cidadao;
 	}
+
 	public void setCidadao(Cidadao cidadao) {
 		this.cidadao = cidadao;
 	}
+
 	public AgenteDeSaude getAgente() {
 		return agente;
 	}
+
 	public void setAgente(AgenteDeSaude agente) {
 		this.agente = agente;
 	}
-	public Vacina getVacina() {
-		return vacina;
+
+	public List<Vacina> getVacinas() {
+		return vacinas;
 	}
-	public void setVacina(Vacina vacina) {
-		this.vacina = vacina;
+
+	public void setVacinas(List<Vacina> vacinas) {
+		this.vacinas = vacinas;
 	}
 
 	public Date getData() {
 		return data;
 	}
+
 	public void setData(Date data) {
 		this.data = data;
-	}
-
-	public Lote getLote() {
-		return lote;
-	}
-
-	public void setLote(Lote lote) {
-		this.lote = lote;
 	}
 
 	public LocalVacinacao getLocal() {
@@ -81,9 +111,14 @@ public class Vacinacao {
 	}
 
 	public String emitirComprovante() {
-		return String.format("Comprovante de vacinação:\nCidadão: %s\nVacina: %s\nData: %s", 
-				cidadao.getNome(), vacina.obterInformacoes(), data.toString());
+		StringBuilder comprovante = new StringBuilder();
+		comprovante.append("Comprovante de vacinação:\n");
+		comprovante.append("Cidadão: ").append(cidadao.getNome()).append("\n");
+		comprovante.append("Vacinas:\n");
+		for (Vacina vacina : vacinas) {
+			comprovante.append("- ").append(vacina.obterInformacoes()).append("\n");
+		}
+		comprovante.append("Data: ").append(data.toString());
+		return comprovante.toString();
 	}
-
-
 }

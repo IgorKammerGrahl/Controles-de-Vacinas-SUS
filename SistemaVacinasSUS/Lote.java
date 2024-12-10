@@ -46,7 +46,7 @@ public class Lote {
 	}
 
 	public boolean estoqueBaixo() {
-		return quantidade < 10; // Alerta se o estoque for menor que 10
+		return quantidade < 10; 
 	}
 
 	@Override

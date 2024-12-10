@@ -83,12 +83,12 @@ public class Usuario {
 		try {
 			boolean autenticado = usuario.autenticar(email, senha);
 			if (autenticado) {
-				System.out.println("✔️ Usuário autenticado com sucesso: " + usuario.getNome());
+				System.out.println("- Usuário autenticado com sucesso: " + usuario.getNome());
 			} else {
-				System.out.println("❌ Falha na autenticação para o usuário: " + usuario.getNome());
+				System.out.println("- Falha na autenticação para o usuário: " + usuario.getNome());
 			}
 		} catch (IllegalArgumentException e) {
-			System.out.println("❌ Erro ao tentar autenticar: " + e.getMessage());
+			System.out.println("- Erro ao tentar autenticar: " + e.getMessage());
 		}
 	}
 

@@ -7,12 +7,14 @@ import java.util.List;
 
 public class Cidadao extends Usuario{
 
+	private String endereco;
 	private List<Vacina> historicoVacinas = new ArrayList<>();
 
-	public Cidadao(int id, String nome, String cpf, Date dataNascimento, String email, String senha) {
-		super(id, nome, cpf, dataNascimento, email, senha, PerfilUsuario.CIDADAO);
-		this.historicoVacinas = new ArrayList<>();
-	}
+	public Cidadao(int id, String nome, String cpf, Date dataNascimento, String email, String senha, String endereco) {
+        super(id, nome, cpf, dataNascimento, email, senha, PerfilUsuario.CIDADAO);
+        this.endereco = endereco; 
+        this.historicoVacinas = new ArrayList<>();
+    }
 
 	public List<Vacina> verificarHistorico(){
 		return historicoVacinas;
@@ -44,6 +46,10 @@ public class Cidadao extends Usuario{
 	@Override
 	public String toString() {
 		return "Cidadao [historicoVacinas=" + historicoVacinas + ", toString()=" + super.toString() + "]";
+	}
+
+	public String getEndereco() {
+		return endereco;
 	}
 
 }

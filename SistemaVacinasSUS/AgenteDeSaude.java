@@ -19,20 +19,22 @@ public class AgenteDeSaude extends Usuario {
 	}
 
 	public String gerarRelatorioVacinas() {
-	    StringBuilder relatorio = new StringBuilder();
-	    Map<String, Integer> contagemVacinas = new HashMap<>();
+		StringBuilder relatorio = new StringBuilder();
+		Map<String, Integer> contagemVacinas = new HashMap<>();
 
-	    for (Vacinacao vacinacao : vacinacoesRealizadas) {
-	        String vacinaNome = vacinacao.getVacina().getNome();
-	        contagemVacinas.put(vacinaNome, contagemVacinas.getOrDefault(vacinaNome, 0) + 1);
-	    }
+		for (Vacinacao vacinacao : vacinacoesRealizadas) {
+			for (Vacina vacina : vacinacao.getVacinas()) { 
+				String vacinaNome = vacina.getNome();
+				contagemVacinas.put(vacinaNome, contagemVacinas.getOrDefault(vacinaNome, 0) + 1);
+			}
+		}
 
-	    relatorio.append("Relatório Geral de Vacinas Aplicadas:\n");
-	    for (Map.Entry<String, Integer> entry : contagemVacinas.entrySet()) {
-	        relatorio.append(String.format("- Vacina: %s | Total Aplicadas: %d\n", entry.getKey(), entry.getValue()));
-	    }
+		relatorio.append("Relatório Geral de Vacinas Aplicadas:\n");
+		for (Map.Entry<String, Integer> entry : contagemVacinas.entrySet()) {
+			relatorio.append(String.format("- Vacina: %s | Total Aplicadas: %d\n", entry.getKey(), entry.getValue()));
+		}
 
-	    return relatorio.toString();
+		return relatorio.toString();
 	}
 
 	public String gerarRelatorioCidadaosAtendidos() {

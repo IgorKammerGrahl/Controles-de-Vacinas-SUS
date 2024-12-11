@@ -15,7 +15,7 @@ public class Cidadao extends Usuario{
         this.endereco = endereco; 
         this.historicoVacinas = new ArrayList<>();
     }
-
+	
 	public List<Vacina> verificarHistorico(){
 		return historicoVacinas;
 	}

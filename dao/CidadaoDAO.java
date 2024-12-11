@@ -74,4 +74,31 @@ public class CidadaoDAO {
 		}
 		return cidadaos;
 	}
+
+	public Cidadao buscarPorId(int id) {
+		String sql = "SELECT * FROM cidadao WHERE idcidadao = ?";
+
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return new Cidadao(
+						rs.getInt("idcidadao"),
+						rs.getString("nome"),
+						rs.getString("cpf"),
+						rs.getDate("data_nascimento"),
+						rs.getString("email"),
+						rs.getString("senha"),
+						rs.getString("endereco")
+						);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

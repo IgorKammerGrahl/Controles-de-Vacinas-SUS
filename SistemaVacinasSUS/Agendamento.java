@@ -72,6 +72,10 @@ public class Agendamento {
 		return status;
 	}
 
+	public void setStatus(StatusAgendamento status) {
+		this.status = status;
+	}
+
 	public void confirmarAgendamento() {
 		if (status == StatusAgendamento.PENDENTE) {
 			this.status = StatusAgendamento.CONFIRMADO;

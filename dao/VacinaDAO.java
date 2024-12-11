@@ -57,7 +57,6 @@ public class VacinaDAO {
 				String fabricante = rs.getString("fabricante");
 				int dosesRecomendadas = rs.getInt("doses_recomendadas");
 				int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
-
 				String numeroLote = rs.getString("numero_lote");
 				Date validade = rs.getDate("validade");
 				int quantidade = rs.getInt("quantidade");

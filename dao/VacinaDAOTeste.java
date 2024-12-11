@@ -1,13 +1,12 @@
 package dao;
 
-import dao.VacinaDAO;
 import SistemaVacinasSUS.Lote;
 import SistemaVacinasSUS.Vacina;
 import java.sql.Date;
 
 public class VacinaDAOTeste {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         Lote lote = new Lote(1, "Lote123", new Date(System.currentTimeMillis()), 100);
 
         Vacina vacina = new Vacina(1, "Vacina XYZ", "Fabricante XYZ", 2, 30, lote);

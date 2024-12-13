@@ -37,18 +37,19 @@ public class CidadaoDAO {
 	}
 
 	public boolean verificarCpfExistente(String cpf) {
-		String sql = "SELECT COUNT(*) FROM " + TABELA + " WHERE cpf = ?";
-		try (Connection conn = Conexao.conectar(); 
-				PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1, cpf);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt(1) > 0; 
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;  
+	    String sql = "SELECT COUNT(*) AS total FROM cidadao WHERE cpf = ?";
+	    try (Connection conn = Conexao.conectar();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	        stmt.setString(1, cpf);
+	        ResultSet rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("total") > 0;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 
 	public List<Cidadao> listarTodos() {
@@ -76,29 +77,34 @@ public class CidadaoDAO {
 	}
 
 	public Cidadao buscarPorId(int id) {
-		String sql = "SELECT * FROM cidadao WHERE idcidadao = ?";
+	    String sql = "SELECT * FROM cidadao WHERE idcidadao = ?";
 
-		try (Connection conn = Conexao.conectar();
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+	    try (Connection conn = Conexao.conectar();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-			stmt.setInt(1, id);
-			ResultSet rs = stmt.executeQuery();
+	        stmt.setInt(1, id);
+	        ResultSet rs = stmt.executeQuery();
 
-			if (rs.next()) {
-				return new Cidadao(
-						rs.getInt("idcidadao"),
-						rs.getString("nome"),
-						rs.getString("cpf"),
-						rs.getDate("data_nascimento"),
-						rs.getString("email"),
-						rs.getString("senha"),
-						rs.getString("endereco")
-						);
-			}
+	        if (rs.next()) {
+	            return new Cidadao(
+	                    rs.getInt("idcidadao"),
+	                    rs.getString("nome"),
+	                    rs.getString("cpf"),
+	                    rs.getDate("data_nascimento"),
+	                    rs.getString("email"),
+	                    rs.getString("senha"),
+	                    rs.getString("endereco")
+	            );
+	        } else {
+	            System.out.println("Cidadão com ID " + id + " não encontrado.");
+	        }
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	    } catch (SQLException e) {
+	        System.err.println("Erro ao buscar cidadão por ID: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return null;
 	}
+	
+	
 }

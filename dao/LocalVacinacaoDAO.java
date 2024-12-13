@@ -90,25 +90,25 @@ public class LocalVacinacaoDAO {
 	}
 
 	public LocalVacinacao buscarPorId(int id) {
-		String sql = "SELECT * FROM " + TABELA + " WHERE id = ?";
+	    String sql = "SELECT * FROM " + TABELA + " WHERE id = ?";
 
-		try (Connection conn = Conexao.conectar();
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+	    try (Connection conn = Conexao.conectar();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-			stmt.setInt(1, id);
-			ResultSet rs = stmt.executeQuery();
+	        stmt.setInt(1, id);
+	        ResultSet rs = stmt.executeQuery();
 
-			if (rs.next()) {
-				String nome = rs.getString("nome");
-				String endereco = rs.getString("endereco");
-				String telefone = rs.getString("telefone");
+	        if (rs.next()) {
+	            String nome = rs.getString("nome");
+	            String endereco = rs.getString("endereco");
+	            String telefone = rs.getString("telefone");
 
-				return new LocalVacinacao(id, nome, endereco, telefone);
-			}
+	            return new LocalVacinacao(id, nome, endereco, telefone);
+	        }
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
 	}
 }

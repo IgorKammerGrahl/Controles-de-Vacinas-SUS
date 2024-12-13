@@ -1,5 +1,6 @@
 package SistemaVacinasSUS;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -111,14 +112,15 @@ public class Vacinacao {
 	}
 
 	public String emitirComprovante() {
-		StringBuilder comprovante = new StringBuilder();
-		comprovante.append("Comprovante de vacinação:\n");
-		comprovante.append("Cidadão: ").append(cidadao.getNome()).append("\n");
-		comprovante.append("Vacinas:\n");
-		for (Vacina vacina : vacinas) {
-			comprovante.append("- ").append(vacina.obterInformacoes()).append("\n");
-		}
-		comprovante.append("Data: ").append(data.toString());
-		return comprovante.toString();
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	    StringBuilder comprovante = new StringBuilder();
+	    comprovante.append("Comprovante de vacinação:\n");
+	    comprovante.append("Cidadão: ").append(cidadao.getNome()).append("\n");
+	    comprovante.append("Vacinas:\n");
+	    for (Vacina vacina : vacinas) {
+	        comprovante.append("- ").append(vacina.obterInformacoes()).append("\n");
+	    }
+	    comprovante.append("Data: ").append(sdf.format(data));
+	    return comprovante.toString();
 	}
 }

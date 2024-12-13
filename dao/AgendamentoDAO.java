@@ -15,40 +15,43 @@ public class AgendamentoDAO {
 	private static final String TABELA_INTERMEDIARIA = "agendamento_vacina";
 
 	public boolean inserir(Agendamento agendamento) {
-		String sqlAgendamento = "INSERT INTO " + TABELA + " (cidadao_id, local_id, data_agendamento, status) VALUES (?, ?, ?, ?)";
-		String sqlVacinas = "INSERT INTO " + TABELA_INTERMEDIARIA + " (agendamento_id, vacina_id) VALUES (?, ?)";
+	    String sqlAgendamento = "INSERT INTO agendamento (idcidadao, local_id, data_agendamento, status) VALUES (?, ?, ?, ?)";
+	    String sqlVacinas = "INSERT INTO agendamento_vacina (agendamento_id, vacina_id) VALUES (?, ?)";
 
-		try (Connection conn = Conexao.conectar()) {
-			conn.setAutoCommit(false);
+	    try (Connection conn = Conexao.conectar()) {
+	        conn.setAutoCommit(false);
 
-			try (PreparedStatement stmtAgendamento = conn.prepareStatement(sqlAgendamento, Statement.RETURN_GENERATED_KEYS)) {
-				stmtAgendamento.setInt(1, agendamento.getCidadao().getId());
-				stmtAgendamento.setInt(2, agendamento.getLocal().getId());
-				stmtAgendamento.setDate(3, new java.sql.Date(agendamento.getDataAgendamento().getTime()));
-				stmtAgendamento.setString(4, agendamento.getStatus().toString());
-				stmtAgendamento.executeUpdate();
+	        try (PreparedStatement stmtAgendamento = conn.prepareStatement(sqlAgendamento, Statement.RETURN_GENERATED_KEYS)) {
+	            stmtAgendamento.setInt(1, agendamento.getCidadao().getId());
+	            stmtAgendamento.setInt(2, agendamento.getLocal().getId());
+	            stmtAgendamento.setDate(3, new java.sql.Date(agendamento.getDataAgendamento().getTime()));
+	            stmtAgendamento.setString(4, agendamento.getStatus().toString());
 
-				try (ResultSet generatedKeys = stmtAgendamento.getGeneratedKeys()) {
-					if (generatedKeys.next()) {
-						int agendamentoId = generatedKeys.getInt(1);
+	            int rowsAffected = stmtAgendamento.executeUpdate();
+	            System.out.println("Linhas afetadas na tabela agendamento: " + rowsAffected);
 
-						try (PreparedStatement stmtVacinas = conn.prepareStatement(sqlVacinas)) {
-							for (Vacina vacina : agendamento.getVacinas()) {
-								stmtVacinas.setInt(1, agendamentoId);
-								stmtVacinas.setInt(2, vacina.getId());
-								stmtVacinas.executeUpdate();
-							}
-						}
-					}
-				}
-			}
-			conn.commit();
-			return true;
+	            try (ResultSet generatedKeys = stmtAgendamento.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    int agendamentoId = generatedKeys.getInt(1);
+	                    System.out.println("ID do agendamento criado: " + agendamentoId);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+	                    try (PreparedStatement stmtVacinas = conn.prepareStatement(sqlVacinas)) {
+	                        for (Vacina vacina : agendamento.getVacinas()) {
+	                            stmtVacinas.setInt(1, agendamentoId);
+	                            stmtVacinas.setInt(2, vacina.getId());
+	                            stmtVacinas.executeUpdate();
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	        conn.commit();
+	        return true;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
 	public List<Agendamento> listarTodos() {
@@ -56,7 +59,7 @@ public class AgendamentoDAO {
 		String sql = """
 				    SELECT a.id, a.data_agendamento, a.status, 
 				           c.idcidadao AS cidadao_id, c.nome AS cidadao_nome,
-				           l.local_id AS local_id, l.nome AS local_nome
+				           l.id AS local_id, l.nome AS local_nome
 				    FROM agendamento a
 				    JOIN cidadao c ON a.idcidadao = c.idcidadao
 				    JOIN local_vacinacao l ON a.local_id = l.id

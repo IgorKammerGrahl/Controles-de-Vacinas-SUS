@@ -12,13 +12,11 @@ import java.util.List;
 public class AgendamentoDAOTeste {
 
     public static void main(String[] args) {
-        // Instâncias de DAOs
         CidadaoDAO cidadaoDAO = new CidadaoDAO();
         LocalVacinacaoDAO localDAO = new LocalVacinacaoDAO();
         VacinaDAO vacinaDAO = new VacinaDAO();
         AgendamentoDAO agendamentoDAO = new AgendamentoDAO();
 
-        // Buscar ou criar um cidadão para o agendamento
         System.out.println("Buscando cidadão...");
         Cidadao cidadao = cidadaoDAO.buscarPorId(1); // Substituir com um ID válido do banco
         if (cidadao == null) {
@@ -34,7 +32,7 @@ public class AgendamentoDAOTeste {
         if (local == null) {
             local = new LocalVacinacao(0, "Posto Central", "Rua Principal, 123", "1234-5678");
             localDAO.inserir(local);
-            local = localDAO.buscarPorId(1); // Rebuscar para obter o ID
+            local = localDAO.buscarPorId(2); // Rebuscar para obter o ID
         }
         System.out.println("Local de vacinação encontrado/criado: " + local);
 

@@ -112,7 +112,7 @@ public class VacinacaoDAO {
 		return vacinas;
 	}
 
-	public void salvar(Vacinacao vacinacao) {
+	public boolean salvar(Vacinacao vacinacao) {
 		String insertVacinacao = "INSERT INTO vacinacao (cidadao_id, agente_id, local_id, data) VALUES (?, ?, ?, ?)";
 		String insertVacinas = "INSERT INTO vacinacao_vacina (vacinacao_id, vacina_id) VALUES (?, ?)"; 
 
@@ -141,6 +141,7 @@ public class VacinacaoDAO {
 
 					connection.commit();
 					System.out.println("Vacinação salva com sucesso! Detalhes: " + vacinacao);
+					return true;
 				}
 			}
 
@@ -158,7 +159,9 @@ public class VacinacaoDAO {
 				e.printStackTrace();
 			}
 		}
+		return false; 
 	}
+
 
 	public List<Vacinacao> listarTodos() {
 		List<Vacinacao> vacinacoes = new ArrayList<>();

@@ -65,4 +65,31 @@ public class AgenteDeSaudeDAO {
 			return false;
 		}
 	}
+
+	public AgenteDeSaude buscarPorId(int id) {
+		String sql = "SELECT * FROM agente_de_saude WHERE idagente = ?";
+
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				String nome = rs.getString("nome");
+				String cpf = rs.getString("cpf");
+				Date dataNascimento = rs.getDate("data_nascimento");
+				String email = rs.getString("email");
+				String senha = rs.getString("senha");
+
+				return new AgenteDeSaude(id, nome, cpf, dataNascimento, email, senha);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null; 
+	}
+
 }

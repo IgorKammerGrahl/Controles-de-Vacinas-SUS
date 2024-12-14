@@ -1,4 +1,4 @@
- package SistemaVacinasSUS;
+package SistemaVacinasSUS;
 
 public class Vacina {
 	private int id;

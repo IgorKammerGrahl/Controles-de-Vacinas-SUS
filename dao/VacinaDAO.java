@@ -6,6 +6,7 @@ import SistemaVacinasSUS.Conexao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VacinaDAO {
 	private static final String TABELA = "vacina";
@@ -88,5 +89,49 @@ public class VacinaDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public List<Vacina> buscarVacinasPorIds(List<Integer> vacinasIds) {
+	    List<Vacina> vacinas = new ArrayList<>();
+	    if (vacinasIds == null || vacinasIds.isEmpty()) {
+	        return vacinas;
+	    }
+
+	    String sql = """
+	            SELECT id, nome, fabricante, doses_recomendadas, intervalo_entre_doses,
+	                   numero_lote, validade, quantidade
+	            FROM vacina
+	            WHERE id IN (%s)
+	            """.formatted(vacinasIds.stream().map(id -> "?").collect(Collectors.joining(", ")));
+
+	    try (Connection conn = Conexao.conectar();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	        for (int i = 0; i < vacinasIds.size(); i++) {
+	            stmt.setInt(i + 1, vacinasIds.get(i));
+	        }
+
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            while (rs.next()) {
+	                int id = rs.getInt("id");
+	                String nome = rs.getString("nome");
+	                String fabricante = rs.getString("fabricante");
+	                int dosesRecomendadas = rs.getInt("doses_recomendadas");
+	                int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
+	                String numeroLote = rs.getString("numero_lote");
+	                Date validade = rs.getDate("validade");
+	                int quantidade = rs.getInt("quantidade");
+
+	                Lote lote = new Lote(0, numeroLote, validade, quantidade);
+	                Vacina vacina = new Vacina(id, nome, fabricante, dosesRecomendadas, intervaloEntreDoses, lote);
+	                vacinas.add(vacina);
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return vacinas;
 	}
 }

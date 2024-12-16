@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dao.VacinacaoDAO;
+
 public class AgenteDeSaude extends Usuario {
 	private List<Vacinacao> vacinacoesRealizadas;
 
@@ -19,31 +21,49 @@ public class AgenteDeSaude extends Usuario {
 	}
 
 	public String gerarRelatorioVacinas() {
+		VacinacaoDAO vacinacaoDAO = new VacinacaoDAO();
+		List<Vacinacao> vacinacoesRealizadas = vacinacaoDAO.buscarVacinacoesPorAgenteId(this.getId());
+
+		if (vacinacoesRealizadas.isEmpty()) {
+			return "Nenhuma vacina aplicada por este agente.";
+		}
+
 		StringBuilder relatorio = new StringBuilder();
 		Map<String, Integer> contagemVacinas = new HashMap<>();
 
 		for (Vacinacao vacinacao : vacinacoesRealizadas) {
-			for (Vacina vacina : vacinacao.getVacinas()) { 
-				String vacinaNome = vacina.getNome();
-				contagemVacinas.put(vacinaNome, contagemVacinas.getOrDefault(vacinaNome, 0) + 1);
+			for (Vacina vacina : vacinacao.getVacinas()) {
+				contagemVacinas.put(
+						vacina.getNome(),
+						contagemVacinas.getOrDefault(vacina.getNome(), 0) + 1
+						);
 			}
 		}
 
 		relatorio.append("Relatório Geral de Vacinas Aplicadas:\n");
-		for (Map.Entry<String, Integer> entry : contagemVacinas.entrySet()) {
-			relatorio.append(String.format("- Vacina: %s | Total Aplicadas: %d\n", entry.getKey(), entry.getValue()));
-		}
+		contagemVacinas.forEach((vacina, quantidade) ->
+		relatorio.append(String.format("- Vacina: %s | Total Aplicadas: %d\n", vacina, quantidade))
+				);
 
 		return relatorio.toString();
 	}
 
 	public String gerarRelatorioCidadaosAtendidos() {
+		VacinacaoDAO vacinacaoDAO = new VacinacaoDAO();
+		List<Vacinacao> vacinacoesRealizadas = vacinacaoDAO.buscarVacinacoesPorAgenteId(this.getId());
+
+		if (vacinacoesRealizadas.isEmpty()) {
+			return "Nenhum cidadão atendido por este agente.";
+		}
+
 		StringBuilder relatorio = new StringBuilder();
 		relatorio.append("Cidadãos Atendidos:\n");
-		for (Vacinacao vacinacao : vacinacoesRealizadas) {
+
+		vacinacoesRealizadas.forEach(vacinacao -> {
 			Cidadao cidadao = vacinacao.getCidadao();
 			relatorio.append(String.format("Nome: %s, CPF: %s\n", cidadao.getNome(), cidadao.getCpf()));
-		}
+		});
+
 		return relatorio.toString();
 	}
 }

@@ -4,7 +4,7 @@ import dao.*;
 import SistemaVacinasSUS.*;
 import java.util.List;
 
-class AgendamentoController {
+public class AgendamentoController {
 	private final AgendamentoDAO agendamentoDAO;
 	private final CidadaoDAO cidadaoDAO;
 	private final LocalVacinacaoDAO localVacinacaoDAO;
@@ -41,5 +41,9 @@ class AgendamentoController {
 
 	public boolean cancelarAgendamento(int agendamentoId) {
 		return agendamentoDAO.atualizarStatus(agendamentoId, Agendamento.StatusAgendamento.CANCELADO);
+	}
+	
+	public boolean atualizarStatus(int agendamentoId, Agendamento.StatusAgendamento status) {
+	    return agendamentoDAO.atualizarStatus(agendamentoId, status);
 	}
 }

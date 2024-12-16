@@ -194,38 +194,116 @@ public class VacinacaoDAO {
 
 	public List<Vacina> buscarVacinasPorVacinacaoId(int vacinacaoId) {
 		List<Vacina> vacinas = new ArrayList<>();
-		String sql = "SELECT v.id AS vacina_id, v.nome, v.fabricante, v.doses_recomendadas, v.intervalo_entre_doses, " +
-				"l.id AS lote_id, l.numero_lote, l.validade, l.quantidade " +
-				"FROM vacina v " +
-				"JOIN lote l ON v.numero_lote = l.numero_lote " +
-				"JOIN vacinacao_vacina vv ON vv.vacina_id = v.id " +
-				"WHERE vv.vacinacao_id = ?";
+		String sql = """
+				    SELECT v.id, v.nome, v.fabricante, v.doses_recomendadas, v.intervalo_entre_doses, 
+				           v.numero_lote, v.validade, v.quantidade
+				    FROM vacinacao_vacina vv
+				    JOIN vacina v ON vv.vacina_id = v.id
+				    WHERE vv.vacinacao_id = ?
+				""";
 
-		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-			stmt.setInt(1, vacinacaoId);  
-			ResultSet rs = stmt.executeQuery();
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-			while (rs.next()) {
-				int vacinaId = rs.getInt("vacina_id");
-				String nome = rs.getString("nome");
-				String fabricante = rs.getString("fabricante");
-				int dosesRecomendadas = rs.getInt("doses_recomendadas");
-				int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
-
-				int loteId = rs.getInt("lote_id");
-				String numeroLote = rs.getString("numero_lote");
-				Date validade = rs.getDate("validade");
-				int quantidade = rs.getInt("quantidade");
-
-				Lote lote = new Lote(loteId, numeroLote, validade, quantidade);
-
-				Vacina vacina = new Vacina(vacinaId, nome, fabricante, intervaloEntreDoses, dosesRecomendadas, lote);
-				vacinas.add(vacina);
+			stmt.setInt(1, vacinacaoId); 
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					Vacina vacina = new Vacina(
+							rs.getInt("id"),
+							rs.getString("nome"),
+							rs.getString("fabricante"),
+							rs.getInt("doses_recomendadas"),
+							rs.getInt("intervalo_entre_doses"),
+							new Lote(0, rs.getString("numero_lote"), rs.getDate("validade"), rs.getInt("quantidade"))
+							);
+					vacinas.add(vacina);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return vacinas;
+	}
+
+
+	public List<Vacina> buscarHistoricoVacinasPorCidadaoId(int cidadaoId) {
+		List<Vacina> vacinas = new ArrayList<>();
+		String sql = """
+				    SELECT v.id, v.nome, v.fabricante, v.doses_recomendadas, v.intervalo_entre_doses,
+				           v.numero_lote, v.validade, v.quantidade
+				    FROM vacina v
+				    JOIN vacinacao_vacina vv ON v.id = vv.vacina_id
+				    JOIN vacinacao va ON vv.vacinacao_id = va.id
+				    WHERE va.cidadao_id = ?
+				""";
+
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, cidadaoId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String nome = rs.getString("nome");
+					String fabricante = rs.getString("fabricante");
+					int dosesRecomendadas = rs.getInt("doses_recomendadas");
+					int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
+					String numeroLote = rs.getString("numero_lote");
+					Date validade = rs.getDate("validade");
+					int quantidade = rs.getInt("quantidade");
+
+					Vacina vacina = new Vacina(id, nome, fabricante, dosesRecomendadas, intervaloEntreDoses,
+							new Lote(0, numeroLote, validade, quantidade));
+					vacinas.add(vacina);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vacinas;
+	}
+
+
+	public List<Vacinacao> buscarVacinacoesPorAgenteId(int agenteId) {
+		List<Vacinacao> vacinacoes = new ArrayList<>();
+		String sql = """
+				    SELECT v.id, v.cidadao_id, v.agente_id, v.local_id, v.data
+				    FROM vacinacao v
+				    WHERE v.agente_id = ?
+				""";
+
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			stmt.setInt(1, agenteId);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					int vacinacaoId = rs.getInt("id");
+					Cidadao cidadao = buscarCidadaoPorId(rs.getInt("cidadao_id"));
+					LocalVacinacao local = buscarLocalPorId(rs.getInt("local_id"));
+					List<Vacina> vacinas = buscarVacinasPorVacinacaoId(vacinacaoId);
+
+					if (vacinas == null || vacinas.isEmpty()) {
+						System.err.printf("⚠️ Vacinação ID %d não possui vacinas associadas e será ignorada.%n", vacinacaoId);
+						continue;
+					}
+
+					Vacinacao vacinacao = new Vacinacao(
+							vacinacaoId, 
+							cidadao, 
+							buscarAgentePorId(agenteId), 
+							vacinas, 
+							rs.getDate("data"), 
+							local
+							);
+
+					vacinacoes.add(vacinacao);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vacinacoes;
 	}
 }

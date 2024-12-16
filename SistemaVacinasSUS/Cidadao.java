@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import dao.VacinacaoDAO;
+
 public class Cidadao extends Usuario{
 
 	private String endereco;
@@ -16,8 +18,9 @@ public class Cidadao extends Usuario{
         this.historicoVacinas = new ArrayList<>();
     }
 	
-	public List<Vacina> verificarHistorico(){
-		return historicoVacinas;
+	public List<Vacina> verificarHistorico() {
+	    VacinacaoDAO vacinacaoDAO = new VacinacaoDAO();
+	    return vacinacaoDAO.buscarHistoricoVacinasPorCidadaoId(this.getId());
 	}
 
 	public List<Vacina> listarVacinasAplicadas() {

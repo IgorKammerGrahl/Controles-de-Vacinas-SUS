@@ -4,7 +4,7 @@ import dao.*;
 import SistemaVacinasSUS.*;
 import java.util.List;
 
-class VacinacaoController {
+public class VacinacaoController {
 	private final VacinacaoDAO vacinacaoDAO;
 	private final CidadaoDAO cidadaoDAO;
 	private final AgenteDeSaudeDAO agenteDeSaudeDAO;

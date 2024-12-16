@@ -73,6 +73,24 @@ public class VacinaDAO {
 		return vacinas;
 	}
 
+	public boolean atualizarEstoqueVacina(int vacinaId, int novaQuantidade) {
+		String sql = "UPDATE vacina SET quantidade = ? WHERE id = ?";
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			stmt.setInt(1, novaQuantidade);
+			stmt.setInt(2, vacinaId);
+
+			int rowsAffected = stmt.executeUpdate();
+			return rowsAffected > 0;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
 	public boolean verificarNomeVacina(String nome) {
 		String sql = "SELECT COUNT(*) FROM " + TABELA + " WHERE nome = ?";
 
@@ -90,48 +108,48 @@ public class VacinaDAO {
 		}
 		return false;
 	}
-	
+
 	public List<Vacina> buscarVacinasPorIds(List<Integer> vacinasIds) {
-	    List<Vacina> vacinas = new ArrayList<>();
-	    if (vacinasIds == null || vacinasIds.isEmpty()) {
-	        return vacinas;
-	    }
+		List<Vacina> vacinas = new ArrayList<>();
+		if (vacinasIds == null || vacinasIds.isEmpty()) {
+			return vacinas;
+		}
 
-	    String sql = """
-	            SELECT id, nome, fabricante, doses_recomendadas, intervalo_entre_doses,
-	                   numero_lote, validade, quantidade
-	            FROM vacina
-	            WHERE id IN (%s)
-	            """.formatted(vacinasIds.stream().map(id -> "?").collect(Collectors.joining(", ")));
+		String sql = """
+				SELECT id, nome, fabricante, doses_recomendadas, intervalo_entre_doses,
+				       numero_lote, validade, quantidade
+				FROM vacina
+				WHERE id IN (%s)
+				""".formatted(vacinasIds.stream().map(id -> "?").collect(Collectors.joining(", ")));
 
-	    try (Connection conn = Conexao.conectar();
-	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+		try (Connection conn = Conexao.conectar();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-	        for (int i = 0; i < vacinasIds.size(); i++) {
-	            stmt.setInt(i + 1, vacinasIds.get(i));
-	        }
+			for (int i = 0; i < vacinasIds.size(); i++) {
+				stmt.setInt(i + 1, vacinasIds.get(i));
+			}
 
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            while (rs.next()) {
-	                int id = rs.getInt("id");
-	                String nome = rs.getString("nome");
-	                String fabricante = rs.getString("fabricante");
-	                int dosesRecomendadas = rs.getInt("doses_recomendadas");
-	                int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
-	                String numeroLote = rs.getString("numero_lote");
-	                Date validade = rs.getDate("validade");
-	                int quantidade = rs.getInt("quantidade");
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String nome = rs.getString("nome");
+					String fabricante = rs.getString("fabricante");
+					int dosesRecomendadas = rs.getInt("doses_recomendadas");
+					int intervaloEntreDoses = rs.getInt("intervalo_entre_doses");
+					String numeroLote = rs.getString("numero_lote");
+					Date validade = rs.getDate("validade");
+					int quantidade = rs.getInt("quantidade");
 
-	                Lote lote = new Lote(0, numeroLote, validade, quantidade);
-	                Vacina vacina = new Vacina(id, nome, fabricante, dosesRecomendadas, intervaloEntreDoses, lote);
-	                vacinas.add(vacina);
-	            }
-	        }
+					Lote lote = new Lote(0, numeroLote, validade, quantidade);
+					Vacina vacina = new Vacina(id, nome, fabricante, dosesRecomendadas, intervaloEntreDoses, lote);
+					vacinas.add(vacina);
+				}
+			}
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-	    return vacinas;
+		return vacinas;
 	}
 }
